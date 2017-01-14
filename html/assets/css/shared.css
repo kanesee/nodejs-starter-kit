@@ -1,0 +1,53 @@
+body {
+  font-size: 140%;
+/*  background-color: rgb(213, 213, 213);*/
+}
+
+html, body {
+/*  height: calc(100% - 20px);*/
+}
+
+.container {
+/*
+  border-bottom: 1px solid #d9d9d9;
+  box-shadow: 0 0 2px rgba(0,0,0,0.12),0 2px 4px rgba(0,0,0,0.24);
+  background-color: white;
+  min-height: 100%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+*/
+}
+
+
+.img-centered, .div-centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.text-centered {
+  text-align: center;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+}
+
+.header {
+  background: url('/assets/img-3rd/project-header.jpg');
+/*  background-color: darkseagreen !important;*/
+  min-height: 130px;
+}
+
+.error {
+  color: red;
+}
+  

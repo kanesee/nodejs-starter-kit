@@ -1,0 +1,261 @@
+<div class="container" ng-controller="searchCtrl">
+  <div class="row">
+    <div class="col-xs-12">
+      <center>
+        <form ng-submit="getCPE()" autocomplete="off" class="form-inline">
+          <div class="form-group ">
+            <input id="cpe-search" type="text" class="form-control" size="100"
+                   placeholder="CPE 2.3 identifier"
+                   ng-model="cpeIdentifier">
+          </div>
+        </form>
+        <div>
+          <form ng-submit="getCPE()" autocomplete="off" class="form-inline">
+            <input id="cpe-vendor" type="text" class="form-control" size="35"
+                   placeholder="CPE Vendor"
+                   ng-model="cpeVendor">
+            <input id="cpe-product" type="text" class="form-control" size="35"
+                   placeholder="CPE Product"
+                   ng-model="cpeProduct">
+            <button type="submit" class="btn">Go</button>
+          </form>
+        </div>
+        <span class="error">{{error}}</span>
+      </center>
+      <hr>
+    </div>
+  </div>
+  <!-- 
+    -- CPE details --
+    --             -->
+  <div class="row" ng-show="cpe">
+    <div class="col-xs-4" ng-show="cpe.names && cpe.names.length">
+      <table class="table">
+        <thead>
+          <th>
+            <a href="" ng-click="showNames=!showNames">
+              <i class="fa fa-caret-down"></i>
+              Names
+              ({{cpe.names.length}})
+            </a>
+          </th>
+        </thead>
+        <tbody ng-show="showNames">
+          <tr ng-repeat="name in cpe.names track by $index">
+            <td>{{name}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-xs-4" ng-show="cpe.versions && cpe.versions.length">
+      <table class="table">
+        <thead>
+          <th>
+            <a href="" ng-click="showVersions=!showVersions">
+              <i class="fa fa-caret-down"></i>
+              Versions
+              {{cpe.versions[0]}}
+              -
+              {{cpe.versions[cpe.versions.length-1]}}
+            </a>
+          </th>
+        </thead>
+        <tbody ng-show="showVersions">
+          <tr ng-repeat="version in cpe.versions track by $index">
+            <td>{{version}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-xs-4" ng-show="cpe.urls && cpe.urls.length">
+      <table class="table">
+        <thead>
+          <th>
+            <a href="" ng-click="showUrls=!showUrls">
+              <i class="fa fa-caret-down"></i>
+              Urls 
+              ({{cpe.urls.length}})
+            </a>
+          </th>
+        </thead>
+        <tbody ng-show="showUrls">
+          <tr ng-repeat="url in cpe.urls track by $index">
+            <td>{{url}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- 
+    -- Results     --
+    --             -->
+  <div class="row" ng-show="resultArray">
+    <div class="col-xs-12">
+      <hr>
+    </div>
+  </div>
+  <div class="row" ng-show="resultArray">
+    <div class="col-xs-12">
+      <div class="options">
+        <label for="showScores">Show Scores</label>
+        <input type="checkbox" name="showScores" ng-model="showScores"/>
+      </div>
+      <div class="text-centered">
+        <dir-pagination-controls></dir-pagination-controls>
+      </div>
+    </div>
+  </div>
+  <div class="row" ng-show="resultArray">
+    <div class="col-xs-12">
+      <table class="table">
+        <thead>
+          <th ng-click="sort('label')">
+            label
+            <i class="fa sort-icon"
+               ng-show="sortKey=='label'"
+               ng-class="{'fa-sort-amount-desc':reverse,'fa-sort-amount-asc':!reverse}"></i>
+          </th>
+          <th ng-click="sort('total_score')">
+            eid
+            <i class="fa sort-icon"
+               ng-show="sortKey=='total_score'"
+               ng-class="{'fa-sort-amount-desc':reverse,'fa-sort-amount-asc':!reverse}"></i>
+          </th>
+          <th>
+            identifiers (sort:
+            <a href="" ng-click="sort('score_vendor')">
+              Vendor
+              <i class="fa sort-icon"
+                 ng-show="sortKey=='score_vendor'"
+                 ng-class="{'fa-sort-amount-desc':reverse,'fa-sort-amount-asc':!reverse}"></i>
+            </a>
+            <a href="" ng-click="sort('score_product')">
+              Product
+              <i class="fa sort-icon"
+                 ng-show="sortKey=='score_product'"
+                 ng-class="{'fa-sort-amount-desc':reverse,'fa-sort-amount-asc':!reverse}"></i>
+            </a>
+            )
+          </th>
+          <th ng-click="sort('score_names')">
+            names
+            <i class="fa sort-icon"
+               ng-show="sortKey=='score_names'"
+               ng-class="{'fa-sort-amount-desc':reverse,'fa-sort-amount-asc':!reverse}"></i>
+          </th>
+          <th>
+            popularity <!--(usage|stars|forks)-->
+          </th>
+          <th ng-click="sort('score_versions')">
+            versions
+            <i class="fa sort-icon"
+               ng-show="sortKey=='score_versions'"
+               ng-class="{'fa-sort-amount-desc':reverse,'fa-sort-amount-asc':!reverse}"></i>
+          </th>
+          <th ng-click="sort('score_urls')">
+            urls
+            <i class="fa sort-icon"
+               ng-show="sortKey=='score_urls'"
+               ng-class="{'fa-sort-amount-desc':reverse,'fa-sort-amount-asc':!reverse}"></i>
+          </th>
+        </thead>
+        <tbody>
+          <tr dir-paginate-start="entity in resultArray
+                            | orderBy:sortKey:reverse 
+                            | emptyToEnd:sortKey
+                            | itemsPerPage:10 as pagedEntities">
+            <td>
+              <select ng-model="entity.label"
+                      ng-change="label(entity.label, entity.eid, entity.identifiers)">
+                <option value="">select</option>
+                <option value="none">none</option>
+                <option value="assoc">assoc</option>
+                <option value="iden">iden</option>
+                <option value="unknown">unknown</option>
+              </select>
+            </td>
+            <td>{{entity.eid}}</td>
+            <td>
+              <td-entity-values data="entity.identifiers"></td-entity-values>
+            </td>
+            <td>
+              <td-entity-values data="entity.names"></td-entity-values>
+            </td>
+            <td>
+              <div ng-show="{{entity.usage}}">{{entity.usage}} <i class="fa fa-line-chart"></i></div>
+              <div ng-show="{{entity.stargazers_count}}">{{entity.stargazers_count}} <i class="fa fa-star"></i></div>
+              <div ng-show="{{entity.forks_count}}">{{entity.forks_count}} <i class="fa fa-code-fork"></i></div>
+            </td>
+            <td>
+              <td-entity-values data="entity.versions"></td-entity-values>
+            </td>
+            <td>
+              <td-entity-values data="entity.urls"></td-entity-values>
+            </td>
+          </tr>
+          <tr dir-paginate-end ng-show="showScores" class="score-row">
+            <td><a href="">notes</a></td>
+            <td>{{entity.total_score.toFixed(3)}}</td>
+            <td>
+              Vendor: {{entity.score_vendor.toFixed(3)}}
+              , Product: {{entity.score_product.toFixed(3)}}
+            </td>
+            <td>{{entity.score_names.toFixed(3)}}</td>
+            <td></td>
+            <td>{{entity.score_versions.toFixed(3)}}</td>
+            <td>{{entity.score_urls.toFixed(3)}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row" ng-show="resultArray">
+    <div class="col-xs-12">
+      <div class="text-centered">
+        <dir-pagination-controls></dir-pagination-controls>
+        <form ng-submit="gotoPage(pageNum)">
+          Goto Page
+          <input type="text" ng-model="pageNum">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<link rel="stylesheet" type="text/css"
+      href="/ng/search/style.css">
+
+<style>
+  #cpe-search {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .options {
+    position: absolute;
+  }
+  
+/*
+  .label {
+    color: darkgray;
+  }
+*/
+  
+/*
+  .vendor, .product {
+    font-weight: bold;
+  }
+*/
+  .artifactId {
+    color: #AB0101;
+  }
+  
+  .sort-icon {
+    color: dodgerblue;
+  }
+  
+  .score-row {
+    background-color: rgba(70, 70, 70, 0.06);
+    color: #B9B9B9;
+  }
+</style>

@@ -1,0 +1,20 @@
+<div ng-switch="values.length">
+  <div ng-switch-when="0"></div>
+  <div ng-switch-when="1"><span ng-bind-html="values[0]"></span></div>
+  <div ng-switch-default>
+    <table class="">
+      <tbody>
+        <tr ng-repeat="val in values"
+            ng-show="$parent.showAll || $first">
+          <td>
+            <span ng-bind-html="val"></span>
+            <a href="" ng-show="$first"
+               ng-click="$parent.showAll=!$parent.showAll">
+              <i class="fa fa-caret-down"></i>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
