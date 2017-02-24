@@ -26,7 +26,7 @@ app.use(express.static(__dirname+'/html'));
  * Route REST calls
  ************************/
 // app.get('*', auth.passport.authenticate('basic', { session: false }))
-app.get('/cpe/vendors/:stuffId',
+app.get('/stuff/:stuffId',
         myroute.getStuff);
 
 

@@ -4,7 +4,7 @@ exports.pool = mysql.createPool({
   host    : 'localhost',
   user    : 'root',
   password: 'PASSWORD',
-  database: 'DATABASE'
+  database: 'DATABASE',
   connectionLimit: 10
 });
 

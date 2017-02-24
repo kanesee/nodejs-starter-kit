@@ -6,6 +6,11 @@ var dbp = require('../shared/db-promise.js');
  * REST API
  *******************/
 exports.getStuff = function(req, res) {
+  var resultArray = ['keys','phone','wallet','watch'];
+  res.send(resultArray);
+}
+
+exports.getStuffFromDb = function(req, res) {
   var stuffId = req.params.stuffid;
                      
   var sql = 'SELECT item'
