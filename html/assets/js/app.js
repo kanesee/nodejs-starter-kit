@@ -1,17 +1,16 @@
-var app = angular.module('thirdwatch.assetmapping',
+var app = angular.module('MyApp',
             ['ngRoute'
             ,'ngSanitize'
             ,'ui.bootstrap'
             // ,'angucomplete-alt'
             ,'angularUtils.directives.dirPagination'
-            ,'dirTdEntityValues'
             ]);
 
 app.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider
       .when('/', {
-        templateUrl: '/ng/search/template.html'
+        templateUrl: '/ng/main/template.html'
       })
       .otherwise({
         redirectTo: '/'
