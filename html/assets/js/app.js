@@ -6,6 +6,10 @@ var app = angular.module('MyApp',
             ,'angularUtils.directives.dirPagination'
             ]);
 
+app.config(['$locationProvider', function($locationProvider) {
+  $locationProvider.hashPrefix('');
+}]);
+
 app.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider
