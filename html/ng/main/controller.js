@@ -28,16 +28,11 @@ function mainCtrl($scope
   // private vars
   var self = this;
   
-  // private functions
-  this.init = function() {
-    $scope.getStuff();
-  }
-  
-  // scope functions
+  /**************************
+   * scope functions
+   *************************/
   
   $scope.getStuff = function() {
-    // reset results
-    $scope.resultMap = {};
     $scope.resultArray = [];    
     
     var url = '/stuff/'+1;
@@ -45,16 +40,22 @@ function mainCtrl($scope
     $http.get(url)
       .then(function(resp) {
         $scope.error = null;
-//          console.log(resp);
         $scope.resultArray = resp.data;
-      },
-      function(resp) {
-        $scope.error = resp.data;
-      }
-      );
+      })
+      .catch(function(err) {
+        $scope.error = err.statusText;
+      });
     
   }
 
+  /**************************
+   * private functions
+   *************************/
   
+  this.init = function() {
+    $scope.getStuff();
+  }
+  
+ 
   this.init();
 }

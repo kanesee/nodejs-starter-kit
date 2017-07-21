@@ -1,7 +1,7 @@
 /*************************
  * Authentication module
  ************************/
-var db = require('../shared/db.js');
+var dbp = require('../shared/db-promise.js');
 // https://www.npmjs.com/package/password-hash
 var passwordHash = require('password-hash');
 exports.passport = require('passport');
@@ -40,24 +40,27 @@ exports.passport.deserializeUser(function(userId, done) {
 //  console.log('deserializeUser');
   var sql = 'SELECT *'
           +' FROM users'
-          +' WHERE id="'+userId+'"';
+          +' WHERE id=?';
 
-  db.connection.query(sql, function(err, rows) {
-    if( err ) {
-      console.log(err);
-      done(err, null);
-    } else {
-      var user = null;
-      if( rows.length ) {
-        user = {
-            id: rows[0].id
-          , password: rows[0].password
-        };
+  dbp.pool.query(sql, [userId])
+    .then(function(rows) {
+      if(rows) {
+        var user = null;
+        if( rows.length ) {
+          user = {
+              id: rows[0].id
+            , password: rows[0].password
+          };
+        }
+        console.log(user);
+        done(null, user);
       }
-      console.log(user);
-      done(null, user);
-    }
-  });   
+    })
+    .catch(function(err) {
+      console.error(err);
+      console.log(sql);
+      done(err, null);
+    });
 });
 
 /**********************************************
@@ -77,12 +80,12 @@ exports.passport.use(new BasicStrategy(
 //    return done(null, getUser(userId, password));
     var sql = 'SELECT *'
             +' FROM users'
-            +' WHERE id="'+userId+'"';
+            +' WHERE id=';
 //            +' AND password="'+password+'"';
 
 //    {
 //      console.log('======');
-//      var pwd = '2361rosecrans';
+//      var pwd = 'XXXX';
 //      var hashedPassword = passwordHash.generate(pwd);
 //      console.log(hashedPassword);
 //
@@ -90,11 +93,8 @@ exports.passport.use(new BasicStrategy(
 //      console.log('======');
 //    }
 
-    db.connection.query(sql, function(err, rows) {
-      if( err ) {
-        console.log(err);
-        done(err, null);
-      } else {
+    dbp.pool.query(sql, [userId])
+      .then(function(rows) {
         var user = null;
         if( rows.length ) {
           var hashedPwd = rows[0].password;
@@ -109,8 +109,11 @@ exports.passport.use(new BasicStrategy(
         }
 //        console.log(user);
         done(null, user);
-      }
-    });    
+      })
+      .catch(function(err) {
+        console.log(err);
+        done(err, null);
+      })
   }
 ));
 
@@ -121,15 +124,14 @@ exports.passport.use(new BasicStrategy(
 function getUser(userId, password) {
   var sql = 'SELECT *'
           +' FROM users'
-          +' WHERE id="'+userId+'"';
+          +' WHERE id=?';
+  var injection = [userId];
   if( password ) {
-      sql +=' AND password="'+password+'"';
+      sql +=' AND password=?';
+      injection.push(password);
   }
-  db.connection.query(sql, function(err, rows) {
-    if( err ) {
-      console.log(err);
-      return null;
-    } else {
+  dbp.pool.query(sql, injection)
+    .then(function(rows) {
       var user = {};
       if( rows.length ) {
         user = {
@@ -139,6 +141,10 @@ function getUser(userId, password) {
       }
       console.log(user);
       return user;
-    }
-  });
+    })
+    .catch(function(err) {
+      console.log(err);
+      done(err, null);
+    })
+
 }

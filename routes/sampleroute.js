@@ -1,4 +1,3 @@
-// var db = require('../shared/db.js');
 var dbp = require('../shared/db-promise.js');
 
 
@@ -30,7 +29,7 @@ exports.getStuffFromDb = function(req, res) {
       }
     })
     .catch(function(err) {
-      console.log('failed getCPEVendors');
+      console.log('failed getStuffFromDb');
       console.error(err);
       console.log(sql);
       res.writeHead(500, {'Content-Type':'text/plain'});
